@@ -27,10 +27,64 @@ size_t Size(void* ptr)
 	return ((size_t*)ptr)[-1];
 }
 
-// implement merge sort
-// extraMemoryAllocated counts bytes of extra memory allocated
-void mergeSort(int pData[], int l, int r)
+void merge(int array[], int left, int x, int right)
 {
+	int i;
+	int j;
+	int k;
+    int size1 = (x - left) + 1;
+    int size2 = right - x;
+ 
+    int* leftArray = (int*)Alloc(size1 * sizeof(int));
+	int* rightArray = (int*)Alloc(size1 * sizeof(int));
+
+    for (int i = 0; i < size1; i++){
+        leftArray[i] = array[left + i];
+	}
+
+    for (int j = 0; j < size2; j++){
+        rightArray[j] = array[x + j + 1];
+	}
+ 
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < size1 && j < size2) {
+        if (leftArray[i] <= rightArray[j]) {
+            array[k] = leftArray[i];
+            i++;
+        }
+        else {
+            array[k] = rightArray[j];
+            j++;
+        }
+        k++;
+    }
+ 
+    while (i < size1) {
+        array[k] = leftArray[i];
+        i++;
+        k++;
+    }
+ 
+    while (j < size2) {
+        array[k] = rightArray[j];
+        j++;
+        k++;
+    }
+
+	DeAlloc(leftArray);
+	DeAlloc(rightArray);
+}
+
+void mergeSort(int array[], int left, int right)
+{
+	if (left < right) {
+        int x = left + ((right - left) / 2);
+        mergeSort(array, left, x);
+        mergeSort(array, x + 1, right);
+        merge(array, left, x, right);
+    }
 }
 
 // parses input file to an integer array
@@ -102,7 +156,6 @@ int main(void)
 		printf("---------------------------\n");
 		printf("Dataset Size : %d\n",dataSz);
 		printf("---------------------------\n");
-		
 		printf("Merge Sort:\n");
 		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
 		extraMemoryAllocated = 0;
